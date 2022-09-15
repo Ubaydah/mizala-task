@@ -22,6 +22,16 @@ export default {
                 message: "Revenue not found"
             })
         }
+        const exists = await Holder.find({
+            name: data.name,
+            revenueId: data.revenueId
+        })
+        if (exists) {
+            return response.status(400).json({
+                status: "fail",
+                message: "holder with this revenue already exists"
+            })
+        }
         const holderShares = await Holder.aggregate(
             [
                 { $match: { revenueId: revenue._id } },
@@ -33,7 +43,6 @@ export default {
                 }
             ]
         )
-
         var totalShare;
         if (holderShares.length == 0) {
             totalShare = 0;
@@ -41,7 +50,6 @@ export default {
             totalShare = holderShares[0]["total"]
         }
         const expectedShare = totalShare + data.share
-        console.log(expectedShare)
         if (revenue.shareType == "fixed" & expectedShare > revenue.revenueCost) {
             return response.status(400).json({
                 status: "fail",
@@ -80,12 +88,11 @@ export default {
             ]
         );
         if (holders.length == 0) {
-            return response.status(200).json({
+            return response.status(400).json({
                 status: "fail",
                 message: "no holders for this revenue"
             })
         }
-
         const revenueCost = revenue.revenueCost
         if (revenue.shareType == "percentage") {
             holders.forEach((holder) => {
@@ -109,9 +116,7 @@ export default {
                     status: "success"
                 }
                 Transaction.create(data)
-
             })
-
         }
         return response.status(200).json({
             status: "success",
@@ -141,20 +146,17 @@ export default {
                 }
             ]
         )
-
         var total;
         if (totalTransactions.length == 0) {
             total = 0;
         } else {
             total = totalTransactions[0]["total"]
         }
-
         return response.status(200).json({
             status: "success",
             message: "holder revenue accumulated successfully",
             accumulatedRevenue: total
         })
-
     },
 
 };
