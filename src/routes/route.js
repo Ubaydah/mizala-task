@@ -12,7 +12,7 @@ const router = Router();
 
 router.post("/revenue", addRevenue);
 router.post("/revenue/holder", addRevenueHolder);
-router.get("/revenue/share/:id", shareRevenue);
-router.get("/revenue/total/:name", getHolderRevenueAccumulated);
+router.get("/revenue/:id/share", shareRevenue);
+router.get("/holder/:name/total", getHolderRevenueAccumulated);
 
 export default router;
